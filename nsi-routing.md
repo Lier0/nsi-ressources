@@ -7,6 +7,7 @@ Synthèse sur le routage
 > Il ne faut pas oublier l'importance de la couche 8 !
 
 Concernant le routage, nous nous plaçons sur la couche réseau du modèle OSI.
+Pour aller plus loin et voir le nouveau modèle TCP/IP : ![FrameIP-OSI](https://www.frameip.com/osi/)
 
 ## Adressage IP
 ### Adresse IP
@@ -25,7 +26,7 @@ Quelques masques types. Il est courant d'utiliser la notation CIDR plutôt que d
 * Adresse IP type : 192.168.0.1
     * CIDR : /24
     * Décimal pointé : 255.255.255.0
-* Adresse IP type : sans
+* Adresse IP type : sans, il s'agit généralement de connexion point à point.
     * CIDR : /32
     * Décimal pointé : 255.255.255.255
 
@@ -47,13 +48,24 @@ Un second exemple avec 192.168.10.128/24
 ```
 
 ## Routage
-Le masque est important pour déterminer l'adresse de réseau. Ces informations sont contenues dans la table de routage. Ainsi lorsque nous envoyons un paquet IP vers une adresse IP de destination, nous regardons la table de routage :
+Nous allons d'abord voir le routage en général en abordant le routage statique, puis le routage dynamique avec les protocoles RIP et OSPF.
+Pour aller plus loin :
+- ![FrameIP-routage](https://www.frameip.com/routage/)
+- ![ictshore](https://www.ictshore.com/free-ccna-course/routing-table-fundamentals/) (en anglais mais les images sont parlantes et nous pouvons ignorer la partie IOS)
+
+Nous voulons envoyer un paquet de notre source à une destination donnée. Nous avons notre IP et notre masque. Cela génère une route stockée dans la table de routage, laquelle contient l'adresse de notre réseau et le masque associé.
+Deux cas :
+- Si l'IP de destination est dans notre sous réseau, nous allons contacter la destination.
+- Sinon, nous envoyons le paquet à la passerelle indiquée sur la route de la destination, ou la passerelle par défaut.
+
+Mais ces deux cas sont gérés par la table de routage, qui est donc composée d'adresse IP de réseaux et de masques. Chaque route indique un réseau et un masque associé. Ainsi lorsque nous envoyons un paquet IP vers une adresse IP de destination, nous regardons la table de routage :
 * à chaque route, nous regardons son masque,
-* nous faisons le ET logique pour obtenir une adresse réseau de destination,
+* nous faisons un ET logique entre l'IP de destination et le masque de la route, pour obtenir une adresse réseau de destination,
 * nous comparons l'adresse du réseau de la route avec l'adresse réseau calculée,
 * si elle concorde, nous suivons cette route,
 * autrement nous continuons,
 * et à défaut, nous prenons la route "default".
+Pour illustrer ce paragraphe, nous pouvons consulter l'image à cette adresse : https://www.ictshore.com/wp-content/uploads/2017/02/1029-03-Route_lookup_process.png
 
 > En résumé, si la destination n'est pas dans notre réseau (ce que nous déterminons avec le masque), nous contactons la passerelle qui va bien.
 
@@ -67,5 +79,11 @@ A - B - C       |Router               |A     |B     |C     |D     |E
 ```
 Dans l'exemple ci-dessus :
 * Quel est le chemin de A vers E ?
-* Ce chemin suffit-il en TCP ? En UDP ?
-* Faut-il un chemin retour et si oui, quel est ce chemin E vers A ?
+* Quel est ce chemin E vers A ?
+* Ces chemins passent-ils par les mêmes routeurs ?
+
+### La métrique d'une route
+Nous avons jusqu'à présent occulté la notion de métrique. Celle-ci permet de donner une priorité aux routes. Ainsi, s'il existe deux routes de A vers E, la route avec la plus petite métrique l'emporte. Si les métriques sont identiques alors l'identifiant de l'interface sera différenciateur.
+Nous introduisons ici la métrique car par la suite, nous allons voir deux procotoles de routage dynamiques :
+- RIP, protocole à vecteur de distance, la métrique est liée au nombre de saut.
+- OSPF, protocole à vecteur d'état de lien, la métrique est liée à la vitesse.
