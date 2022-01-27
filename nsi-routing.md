@@ -1,3 +1,8 @@
+---
+layout: page
+title: routage
+permalink: /routage/
+---
 # nsi-routing
 Synthèse sur le routage
 
