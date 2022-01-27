@@ -12,7 +12,7 @@ Synthèse sur le routage
 > Il ne faut pas oublier l'importance de la couche 8 !
 
 Concernant le routage, nous nous plaçons sur la couche réseau du modèle OSI.
-Pour aller plus loin et voir le nouveau modèle TCP/IP : https://www.frameip.com/osi/.
+Pour aller plus loin et voir le nouveau modèle TCP/IP : [frameip-osi](https://www.frameip.com/osi/).
 
 ## Adressage IP
 ### Adresse IP
@@ -55,8 +55,8 @@ Un second exemple avec 192.168.10.128/24
 ## Routage
 Nous allons d'abord voir le routage en général en abordant le routage statique, puis le routage dynamique avec les protocoles RIP et OSPF.
 Pour aller plus loin :
-- https://www.frameip.com/routage/
-- https://www.ictshore.com/free-ccna-course/routing-table-fundamentals/ (en anglais mais les images sont parlantes et nous pouvons ignorer la partie IOS)
+- [frameip-routage](https://www.frameip.com/routage/).
+- [ictshore-routing](https://www.ictshore.com/free-ccna-course/routing-table-fundamentals/) (en anglais mais les images sont parlantes et nous pouvons ignorer la partie IOS).
 
 Nous voulons envoyer un paquet de notre source à une destination donnée. Nous avons notre IP et notre masque. Cela génère une route stockée dans la table de routage, laquelle contient l'adresse de notre réseau et le masque associé.
 Deux cas :
@@ -70,7 +70,7 @@ Mais ces deux cas sont gérés par la table de routage, qui est donc composée d
 * si elle concorde, nous suivons cette route,
 * autrement nous continuons,
 * et à défaut, nous prenons la route "default".
-Pour illustrer ce paragraphe, nous pouvons consulter l'image à cette adresse : https://www.ictshore.com/wp-content/uploads/2017/02/1029-03-Route_lookup_process.png
+Pour illustrer ce paragraphe, nous pouvons consulter l'image à cette adresse : ![ictshore-img](https://www.ictshore.com/wp-content/uploads/2017/02/1029-03-Route_lookup_process.png).
 
 > En résumé, si la destination n'est pas dans notre réseau (ce que nous déterminons avec le masque), nous contactons la passerelle qui va bien.
 
@@ -98,7 +98,7 @@ Les métriques définies par les protocoles ne sont pas forcement celles que nou
 Routing Information Protocol, permet à un routeur de partager ses routes à ses voisins proches. Ainsi, de proche en proche, les routes vont se propager, sur la base de l'algorithme de Bellman-Ford.
 RIP est plutôt utilisé sur des petits réseaux, notamment à cause de la limitation à 15 sauts. Un route RIP doit avoir une métrique inférieure ou égale à 15.
 
-Les principes sont donc :
+Le principe est donc :
 - nous avons des adresses IP sur nos interfaces,
 - lesquelles impliquent des routes relatives aux interfaces,
 - nous précisons à RIP les réseaux sur lesquels nous voulons partager les routes associées à ces réseaux.
@@ -113,7 +113,14 @@ A - B - C     |Router                 |A        |B        |C        |D        |E
                                       |D, B, 2  |D, D, 1  |E, E, 1  |C, B, 2  |C, C, 1
                                       |E, B, 3  |E, C, 2  |D, E, 2  |E, E, 1  |D, D, 1
 ```
-> Nous devons retenir que la métrique de RIP est relative au nombre de saut.
+
+Avec un niveau de détail supplémentaire, voici comment interagissent les routeurs :
+- environ toutes les 30s (valeur configurable), un routeur envoie à ses voisins toutes les routes qu'il connaît,
+- le routeur recevant les routes, les incrémentes et compare chaque route de la table de routage reçue avec sa propre table :
+  - si la métrique incrémentée est égale ou inférieur à 15 et que la route est inconnue ou avec une métrique inférieure, alors elle est enregistrée ou mise à jour.
+  - sinon elle est ignorée.
+
+> Nous devons retenir que la métrique de RIP est relative au nombre de saut. RIP envoie toute la table et charge le réseau.
 
 ### Routage dynamique - OSPF-v2
 Open Shortest Path First, permet de partager des routes sur un réseau organisé en zone, autour d'une zone dorsale (backbone, area 0). Les routes se propagent de proche en proche au sein d'une zone, par des résumés vers l'extérieur, sur la base de l'algorithme de Dijkstra.
@@ -134,8 +141,16 @@ A - B - C     |Router                 |A         |B         |C         |D       
                                       |E, B, 12  |E, D,  2  |D, B, 11  |E, E,  1  |C, C,  1
                                                                                   |D, D,  1
 ```
-> Nous devons retenir que la métrique d'OSPF est relative au débit d'un lien.
+
+Avec un niveau de détail supplémentaire, voici comment interagissent les routeurs :
+- les routeurs se disent "hello" et établissent la topologie,
+- éventuellement un routeur de référence est retenu d'après son identifiant le plus haut, avec des routers de backup,
+- les routes sont partagées avec le routeur de référence,
+- un routeur connait donc la topologie et constate s'il manque une route ou non :
+  - s'il manque une route, une requête de mise à jour est envoyée au routeur de référence.
+
+> Nous devons retenir que la métrique d'OSPF est relative au débit d'un lien. OSPF envoie les routes inconnues et charge les ressources du routeur.
 
 ### RIP ou OSPF
 Le choix du protocole dépend de la topologie et des besoins. Les deux sont complémentaires et avoir du RIP en bordure d'OSPF est cohérent.
-Nous pouvons consulter ce lien pour un comparatif entre RIP et OSPF : https://community.fs.com/fr/blog/rip-vs-ospf-what-is-the-difference.html.
+Nous pouvons consulter ce lien pour un comparatif entre RIP et OSPF : [fs_rip-vs-ospf](https://community.fs.com/fr/blog/rip-vs-ospf-what-is-the-difference.html).
