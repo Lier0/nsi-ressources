@@ -6,6 +6,8 @@ permalink: /routage/
 # nsi-routing
 Synthèse sur le routage
 
+Le but du routage, c'est de permettre à Alice d'envoyer un message à Bob, à travers le nuage "internet" (réseau de réseaux).
+
 ## Modèle OSI vs TCP/IP
 ![OSI-TCP/IP-newTCP/IP](https://irp.nain-t.net/lib/exe/fetch.php/routage:modeles.gif)
 > L'idée étant de comprendre l'indépendance des couches entre elles, avec le matériel en bas et la partie logique en haut.
